@@ -8,7 +8,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r load-packages, include=FALSE}
-library(bbr)
+library(tidyverse)
+library(stringr)
+library(robotstxt)
+library(rvest)
+library(httr)
 ```
 
 ```{r examples}
@@ -17,4 +21,28 @@ ex_player_letter <- get_players("a")
 ex_player_data <- get_player_data("abdelal01")
 ```
 
+# MVP Tracker for NBA
 
+```{r}
+bbreference <- read_html("https://www.basketball-reference.com/awards/mvp.html")
+```
+
+```{r NBA-mvp}
+season <- bbreference %>%
+  html_nodes("#mvp_NBA th a") %>% 
+  html_text()
+
+player <- bbreference %>%
+  html_nodes("#mvp_NBA td.left+ .left a") %>%
+  html_text()
+
+team <- bbreference %>% 
+  html_nodes(css = "#mvp_NBA .right+ .left a") %>% 
+  html_text()
+
+nba_mvp <- tibble(
+  seasons = season,
+  players = player,
+  teams = team
+)
+```
